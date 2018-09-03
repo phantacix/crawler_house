@@ -1,14 +1,17 @@
 package fetcher
 
 import (
-	"net/http"
-	"fmt"
-	"io/ioutil"
-	"io"
 	"bufio"
+	"fmt"
+	"io"
+	"io/ioutil"
+	"net/http"
+	"golang.org/x/text/transform"
+	"golang.org/x/text/encoding/simplifiedchinese"
 	"golang.org/x/net/html/charset"
-	"golang.org/x/text/encoding/unicode"
+	"golang.org/x/text/encoding"
 	"log"
+	"golang.org/x/text/encoding/unicode"
 )
 func determineEncoding(r io.Reader) encoding.Encoding {
 	bytes, err := bufio.NewReader(r).Peek(1024)
