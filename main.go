@@ -1,47 +1,37 @@
 package main
 
 import (
-	"bufio"
+	"github.com/tebeka/selenium"
 	"fmt"
-	"io"
-	"io/ioutil"
-	"net/http"
-	"golang.org/x/text/transform"
-	"golang.org/x/text/encoding/simplifiedchinese"
-	"golang.org/x/net/html/charset"
-	"golang.org/x/text/encoding"
+	"os"
 )
 
-func determineEncoding(r io.Reader) encoding.Encoding {
-	bytes, err := bufio.NewReader(r).Peek(1024)
-	if err != nil {
-		panic(err)
-	}
-	e, _, _ := charset.DetermineEncoding(bytes, "")
-	return e
-}
-
 func main() {
-	resp, err := http.Get("http://ris.szpl.gov.cn/bol/")
+	const CHROME_DRIVER_PATH  = "C:/Program Files (x86)/Google/Chrome/Application/chromedriver.exe"
+	const URL_START = "http://ris.szpl.gov.cn/bol/"
+
+	opts := []selenium.ServiceOption{
+		selenium.Output(os.Stderr),            // Output debug information to STDERR.
+	}
+	caps := selenium.Capabilities{"browserName": "chrome"}
+
+	selenium.SetDebug(true)
+	service, err := selenium.NewChromeDriverService(CHROME_DRIVER_PATH, 9515, opts...)
 	if err != nil {
 		panic(err)
 	}
-	defer resp.Body.Close()
+	defer service.Stop()
 
-	if resp.StatusCode != http.StatusOK {
-		fmt.Println("Errror: status code", resp.StatusCode)
-		return
-	}
-
-	utf8Reader := transform.NewReader(resp.Body, simplifiedchinese.GBK.NewDecoder())
-
-	// 自动推断：此例效果不好
-	//e := determineEncoding(resp.Body)
-	//utf8Reader := transform.NewReader(resp.Body, e.NewDecoder())
-
-	index, err := ioutil.ReadAll(utf8Reader)
+	// Connect to the WebDriver instance running locally.
+	webDriver, err := selenium.NewRemote(caps, fmt.Sprintf("http://localhost:%d/wd/hub", 9515))
 	if err != nil {
 		panic(err)
 	}
-	fmt.Printf("%s\n", index)
+
+	// 访问目标网站首页
+	err = webDriver.Get(URL_START)
+	if err != nil {
+		panic(err)
+	}
+
 }
