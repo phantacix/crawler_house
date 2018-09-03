@@ -34,6 +34,11 @@ func main() {
 	}
 
 	utf8Reader := transform.NewReader(resp.Body, simplifiedchinese.GBK.NewDecoder())
+
+	// 自动推断：此例效果不好
+	//e := determineEncoding(resp.Body)
+	//utf8Reader := transform.NewReader(resp.Body, e.NewDecoder())
+
 	index, err := ioutil.ReadAll(utf8Reader)
 	if err != nil {
 		panic(err)
