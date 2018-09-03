@@ -27,11 +27,29 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+	defer webDriver.Quit()
 
 	// 访问目标网站首页
 	err = webDriver.Get(URL_START)
 	if err != nil {
 		panic(err)
 	}
+
+	// 获取总页数
+	pages, err := webDriver.FindElement(selenium.ByXPATH, "//*[@id=\"AspNetPager1\"]/div[1]/b[3]")
+	if err != nil {
+		panic(err)
+	}
+	pageNum, _ := pages.Text()
+	fmt.Println("Total pages: ", pageNum)       //Total pages:  106
+
+
+	// 获取总项目数
+	projects, err := webDriver.FindElement(selenium.ByXPATH, "//*[@id=\"AspNetPager1\"]/div[1]/b[2]")
+	if err != nil {
+		panic(err)
+	}
+	projectNum, _ := projects.Text()
+	fmt.Println("Total projects: ", projectNum) // Total projects:  3169
 
 }
