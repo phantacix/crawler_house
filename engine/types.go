@@ -13,5 +13,6 @@ type ParseResult struct {
 }
 
 func NilParser(driver selenium.WebDriver) ParseResult {
+	defer driver.Close()
 	return ParseResult{}
 }
