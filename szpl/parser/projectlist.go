@@ -44,7 +44,10 @@ func ParseProjectList(driver selenium.WebDriver) engine.ParseResult {
 		href, _ := v.GetAttribute("href")
 		p, _ := v.Text()
 		if p != "" {
-			if strings.HasPrefix(href, "http://") {
+			// 匹配 url 中的 projectdetail 过滤掉许可证详细信息页面
+			// http://ris.szpl.gov.cn/bol/projectdetail.aspx?id=34792
+			// http://ris.szpl.gov.cn/bol/certdetail.aspx?id=35373
+			if strings.Contains(href, "projectdetail") {
 				fmt.Printf("超链接地址：%s, 项目：%s \n", href, p)
 				result.Items = append(result.Items, p)
 				result.Requests = append(result.Requests, engine.Request{
