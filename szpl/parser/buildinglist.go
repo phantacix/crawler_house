@@ -7,7 +7,7 @@ import (
 	"../../engine"
 )
 
-func ParseProject(driver selenium.WebDriver) engine.ParseResult {
+func ParseBuildingList(driver selenium.WebDriver) engine.ParseResult {
 
 	webDriver := driver
 	defer webDriver.Quit()
@@ -30,8 +30,7 @@ func ParseProject(driver selenium.WebDriver) engine.ParseResult {
 				result.Items = append(result.Items, p)
 				result.Requests = append(result.Requests, engine.Request{
 					Url: string(href),
-					//ParserFunc: engine.NilParser,  // 调试
-					ParserFunc: ParseBuildingList,
+					ParserFunc: engine.NilParser,
 				})
 			}
 		}
