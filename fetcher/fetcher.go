@@ -1,45 +1,36 @@
 package fetcher
 
 import (
-	"bufio"
 	"fmt"
-	"io"
-	"io/ioutil"
-	"net/http"
-	"golang.org/x/text/transform"
-	"golang.org/x/text/encoding/simplifiedchinese"
-	"golang.org/x/net/html/charset"
-	"golang.org/x/text/encoding"
+	"os"
+	"github.com/tebeka/selenium"
 	"log"
-	"golang.org/x/text/encoding/unicode"
 )
-func determineEncoding(r io.Reader) encoding.Encoding {
-	bytes, err := bufio.NewReader(r).Peek(1024)
+
+
+func Fetch(url string)(driver selenium.WebDriver) {
+	const CHROME_DRIVER_PATH = "C:/Program Files (x86)/Google/Chrome/Application/chromedriver.exe"
+
+	opts := []selenium.ServiceOption{
+		selenium.Output(os.Stderr), // Output debug information to STDERR.
+	}
+	caps := selenium.Capabilities{"browserName": "chrome"}
+
+	selenium.SetDebug(false)
+	_, err := selenium.NewChromeDriverService(CHROME_DRIVER_PATH, 9515, opts...)
 	if err != nil {
-		log.Printf("Fetcher error: %v", err)
-		return unicode.UTF8
+		log.Printf("Error starting the ChromeDriver server: %v", err)
 	}
-	e, _, _ := charset.DetermineEncoding(bytes, "")
-	return e
-}
+	//defer service.Stop()
 
-func Fetch(url string) ([]byte, err) {
-	resp, err := http.Get(url)
+	// Connect to the WebDriver instance running locally.
+	webDriver, err := selenium.NewRemote(caps, fmt.Sprintf("http://localhost:%d/wd/hub", 9515))
 	if err != nil {
-		return nil, err
+		log.Printf("Error Connect to the WebDriver instance: %v", err)
 	}
-	defer resp.Body.Close()
+	//defer webDriver.Quit()
 
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("Wrong status code: %d", resp.StatusCode)
-	}
-
-	utf8Reader := transform.NewReader(resp.Body, simplifiedchinese.GBK.NewDecoder())
-
-	// 自动推断：此例效果不好
-	//e := determineEncoding(resp.Body)
-	//utf8Reader := transform.NewReader(resp.Body, e.NewDecoder())
-
-	return ioutil.ReadAll(utf8Reader)
-
+	//fmt.Println(reflect.TypeOf(webDriver)) //*selenium.remoteWD
+	webDriver.Get(url)
+	return webDriver
 }
