@@ -13,10 +13,17 @@ func ParseBuildingList(driver selenium.WebDriver) engine.ParseResult {
 	defer webDriver.Quit()
 
 
+	b, err := webDriver.FindElement(selenium.ByXPATH, "//*[@id=\"imgBt1\"]")  // 预售
+	if err != nil{
+		panic(err)
+	}
+	b.Click()
+
 	a, err := webDriver.FindElements(selenium.ByXPATH, "//a")
 	if err != nil{
 		panic(err)
 	}
+
 	result := engine.ParseResult{}
 	for _, v := range a {
 		href, _ := v.GetAttribute("href")
@@ -30,7 +37,8 @@ func ParseBuildingList(driver selenium.WebDriver) engine.ParseResult {
 				result.Items = append(result.Items, p)
 				result.Requests = append(result.Requests, engine.Request{
 					Url: string(href),
-					ParserFunc: engine.NilParser,
+					//ParserFunc: engine.NilParser,  // 调试
+					ParserFunc: ParseBuilding,
 				})
 			}
 		}
