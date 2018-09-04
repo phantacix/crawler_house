@@ -29,7 +29,8 @@ func ParseProject(driver selenium.WebDriver) engine.ParseResult {
 				fmt.Printf("超链接地址：%s, building：%s \n", href, p)
 				result.Items = append(result.Items, p)
 				result.Requests = append(result.Requests, engine.Request{
-					Url: string(href),
+					Url: string("http://ris.szpl.gov.cn/bol/building.aspx?id=31743&presellid=34432"), // 调试
+					//Url: string(href),
 					//ParserFunc: engine.NilParser,  // 调试
 					ParserFunc: ParseBuildingList,
 				})
