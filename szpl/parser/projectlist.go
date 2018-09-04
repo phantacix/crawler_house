@@ -52,7 +52,8 @@ func ParseProjectList(driver selenium.WebDriver) engine.ParseResult {
 				result.Items = append(result.Items, p)
 				result.Requests = append(result.Requests, engine.Request{
 					Url: string(href),
-					ParserFunc: engine.NilParser,
+					//ParserFunc: engine.NilParser,   // 调试
+					ParserFunc: ParseProject,
 				})
 			}
 		}

@@ -21,14 +21,14 @@ func Fetch(url string)(driver selenium.WebDriver) {
 	if err != nil {
 		log.Printf("Error starting the ChromeDriver server: %v", err)
 	}
-	//defer service.Stop()
+	//defer service.Stop()   // 这里不能关闭
 
 	// Connect to the WebDriver instance running locally.
 	webDriver, err := selenium.NewRemote(caps, fmt.Sprintf("http://localhost:%d/wd/hub", 9515))
 	if err != nil {
 		log.Printf("Error Connect to the WebDriver instance: %v", err)
 	}
-	//defer webDriver.Quit()
+	//defer webDriver.Quit()  // 在 parser 解析完毕后再关闭
 
 	//fmt.Println(reflect.TypeOf(webDriver)) //*selenium.remoteWD
 	webDriver.Get(url)
