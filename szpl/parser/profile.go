@@ -5,7 +5,23 @@ import (
 	"github.com/tebeka/selenium"
 	"../../engine"
 	"../../model"
+	//"../../persist"
+	"reflect"
+	"database/sql"
+	"log"
+	_ "github.com/go-sql-driver/mysql"
 )
+
+func Struct2Map(obj interface{}) map[string]interface{} {
+	t := reflect.TypeOf(obj)
+	v := reflect.ValueOf(obj)
+
+	var data = make(map[string]interface{})
+	for i := 0; i < t.NumField(); i++ {
+		data[t.Field(i).Name] = v.Field(i).Interface()
+	}
+	return data
+}
 
 func ParseProfile(driver selenium.WebDriver) engine.ParseResult {
 
@@ -107,9 +123,35 @@ func ParseProfile(driver selenium.WebDriver) engine.ParseResult {
 	profile.CSharedPublicArea = cspa
 
 	fmt.Println(pb, b, bt, c, fp, pr, ht, psa, puca, pspa, csa, cuca, cspa)
+	data := Struct2Map(profile)
+	fmt.Println(data)
 
 	result := engine.ParseResult{
-		Items: []interface{}{profile},
+		Items: []interface{}{data},
 	}
+
+	db, err := sql.Open("mysql", "root:root@tcp(127.0.0.1:3306)/szrem")
+	if err != nil {
+		log.Fatal(err)
+	}
+	err = db.Ping()
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer db.Close()
+
+	stmt, err := db.Prepare("insert into house (building,block,type,contract,filing_price,room,house_type,pre_sales_area,pre_unit_cst_area,pre_shared_public_area,c_sales_area,c_unit_cst_area,c_shared_public_area) values (?,?,?,?,?,?,?,?,?,?,?,?,?)")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	res, err := stmt.Exec(pb, b, bt, c, fp, pr, ht, psa, puca, pspa, csa, cuca, cspa)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(res)
+
+
+	//persist.ItemSaver(result)  // 持久化
 	return result
 }
