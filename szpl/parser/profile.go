@@ -7,9 +7,9 @@ import (
 	"../../model"
 	//"../../persist"
 	"reflect"
-	"database/sql"
 	"log"
-	_ "github.com/go-sql-driver/mysql"
+	"github.com/jinzhu/gorm"
+	_ "github.com/jinzhu/gorm/dialects/mysql"
 )
 
 func Struct2Map(obj interface{}) map[string]interface{} {
@@ -130,28 +130,15 @@ func ParseProfile(driver selenium.WebDriver) engine.ParseResult {
 		Items: []interface{}{data},
 	}
 
-	db, err := sql.Open("mysql", "root:root@tcp(127.0.0.1:3306)/szrem")
-	if err != nil {
-		log.Fatal(err)
-	}
-	err = db.Ping()
+	db, err := gorm.Open("mysql", "root:root@tcp(127.0.0.1:3306)/szrem?charset=utf8&parseTime=True&loc=Local")
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer db.Close()
 
-	stmt, err := db.Prepare("insert into house (building,block,type,contract,filing_price,room,house_type,pre_sales_area,pre_unit_cst_area,pre_shared_public_area,c_sales_area,c_unit_cst_area,c_shared_public_area) values (?,?,?,?,?,?,?,?,?,?,?,?,?)")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	res, err := stmt.Exec(pb, b, bt, c, fp, pr, ht, psa, puca, pspa, csa, cuca, cspa)
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Println(res)
-
-
+	db.Set("gorm:table_options", "ENGINE=InnoDB CHARSET=utf8").CreateTable(&model.Profile{})
+	db.NewRecord(profile)
+	db.Create(&profile)
 	//persist.ItemSaver(result)  // 持久化
 	return result
 }
