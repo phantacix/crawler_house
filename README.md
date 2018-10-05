@@ -7,6 +7,7 @@ go get github.com/go-sql-driver/mysql
 go get github.com/tebeka/selenium
 go get github.com/tebeka/selenium/chrome
 go get -u github.com/jinzhu/gorm
+go get -u github.com/jinzhu/inflection
 ```
 
 ### 效果：
