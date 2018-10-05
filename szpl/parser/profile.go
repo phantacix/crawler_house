@@ -2,6 +2,8 @@ package parser
 
 import (
 	"fmt"
+	"strconv"
+	"strings"
 	"github.com/tebeka/selenium"
 	"../../engine"
 	"../../model"
@@ -57,13 +59,21 @@ func ParseProfile(driver selenium.WebDriver) engine.ParseResult {
 	if err != nil{
 		panic(err)
 	}
-	fp, _ := a.Text()
+	fpt, _ := a.Text()
+	fpt = strings.Replace(fpt, "元/平方米(按建筑面积计)", "", -1)
+	fpt = strings.Replace(fpt, "--", "", -1)
+	fpt = strings.Replace(fpt, " ", "", -1)
+	fpt = strings.Replace(fpt, "\n", "", -1)
+	fp, _ := strconv.ParseFloat(fpt, 32)
 
 	a, err = webDriver.FindElement(selenium.ByXPATH, "/html/body/center/center/table/tbody/tr/td/table/tbody/tr/td/table/tbody/tr[3]/td[4]")
 	if err != nil{
 		panic(err)
 	}
-	pr, _ := a.Text()
+	prt, _ := a.Text()
+	prt = strings.Replace(prt, " ", "", -1)
+	prt = strings.Replace(prt, "\n", "", -1)
+	pr, _ := strconv.ParseInt(prt, 10, 64)
 
 	a, err = webDriver.FindElement(selenium.ByXPATH, "/html/body/center/center/table/tbody/tr/td/table/tbody/tr/td/table/tbody/tr[3]/td[6]")
 	if err != nil{
@@ -75,52 +85,79 @@ func ParseProfile(driver selenium.WebDriver) engine.ParseResult {
 	if err != nil{
 		panic(err)
 	}
-	psa, _ := a.Text()
+	psat, _ := a.Text()
+	psat = strings.Replace(psat, "平方米", "", -1)
+	psat = strings.Replace(psat, " ", "", -1)
+	psat = strings.Replace(psat, "\n", "", -1)
+	psa, _ := strconv.ParseFloat(psat, 32)
 
 	a, err = webDriver.FindElement(selenium.ByXPATH, "/html/body/center/center/table/tbody/tr/td/table/tbody/tr/td/table/tbody/tr[5]/td[4]")
 	if err != nil{
 		panic(err)
 	}
-	puca, _ := a.Text()
+	pucat, _ := a.Text()
+	pucat = strings.Replace(pucat, "平方米", "", -1)
+	pucat = strings.Replace(pucat, " ", "", -1)
+	pucat = strings.Replace(pucat, "\n", "", -1)
+	puca, _ := strconv.ParseFloat(pucat, 32)
 
 	a, err = webDriver.FindElement(selenium.ByXPATH, "/html/body/center/center/table/tbody/tr/td/table/tbody/tr/td/table/tbody/tr[5]/td[6]")
 	if err != nil{
 		panic(err)
 	}
-	pspa, _ := a.Text()
+	pspat, _ := a.Text()
+	pspat = strings.Replace(pspat, "平方米", "", -1)
+	pspat = strings.Replace(pspat, " ", "", -1)
+	pspat = strings.Replace(pspat, "\n", "", -1)
+	pspa, _ := strconv.ParseFloat(pspat, 32)
 
 	a, err = webDriver.FindElement(selenium.ByXPATH, "/html/body/center/center/table/tbody/tr/td/table/tbody/tr/td/table/tbody/tr[7]/td[6]")
 	if err != nil{
 		panic(err)
 	}
-	csa, _ := a.Text()
+	csat, _ := a.Text()
+	csat = strings.Replace(csat, "平方米", "", -1)
+	csat = strings.Replace(csat, "--", "", -1)
+	csat = strings.Replace(csat, " ", "", -1)
+	csat = strings.Replace(csat, "\n", "", -1)
+	csa, _ := strconv.ParseFloat(csat, 32)
 
 	a, err = webDriver.FindElement(selenium.ByXPATH, "/html/body/center/center/table/tbody/tr/td/table/tbody/tr/td/table/tbody/tr[7]/td[2]")
 	if err != nil{
 		panic(err)
 	}
-	cuca, _ := a.Text()
+	cucat, _ := a.Text()
+	cucat = strings.Replace(cucat, "平方米", "", -1)
+	cucat = strings.Replace(cucat, "--", "", -1)
+	cucat = strings.Replace(cucat, " ", "", -1)
+	cucat = strings.Replace(cucat, "\n", "", -1)
+	cuca, _ := strconv.ParseFloat(cucat, 32)
 
 	a, err = webDriver.FindElement(selenium.ByXPATH, "/html/body/center/center/table/tbody/tr/td/table/tbody/tr/td/table/tbody/tr[7]/td[4]")
 	if err != nil{
 		panic(err)
 	}
-	cspa, _ := a.Text()
+	cspat, _ := a.Text()
+	cspat = strings.Replace(cspat, "平方米", "", -1)
+	cspat = strings.Replace(cspat, "--", "", -1)
+	cspat = strings.Replace(cspat, " ", "", -1)
+	cspat = strings.Replace(cspat, "\n", "", -1)
+	cspa, _ := strconv.ParseFloat(cspat, 32)
 
 	profile := model.Profile{}
 	profile.ProjectBuilding = pb
 	profile.Block = b
 	profile.BlockType = bt
 	profile.Contract = c
-	profile.FilingPrice = fp
+	profile.FilingPrice = float32(fp)
 	profile.Room = pr
 	profile.HouseType = ht
-	profile.PreSalesArea = psa
-	profile.PreUnitCstArea = puca
-	profile.PreSharedPublicArea = pspa
-	profile.CSalesArea = csa
-	profile.CUnitCstArea = cuca
-	profile.CSharedPublicArea = cspa
+	profile.PreSalesArea = float32(psa)
+	profile.PreUnitCstArea = float32(puca)
+	profile.PreSharedPublicArea = float32(pspa)
+	profile.CSalesArea = float32(csa)
+	profile.CUnitCstArea = float32(cuca)
+	profile.CSharedPublicArea = float32(cspa)
 
 	fmt.Println(pb, b, bt, c, fp, pr, ht, psa, puca, pspa, csa, cuca, cspa)
 	data := Struct2Map(profile)
