@@ -58,6 +58,7 @@ func ParseProjectList(driver selenium.WebDriver) engine.ParseResult {
 			panic(err)
 		}
 		wd.Click()
+		webDriver.CurrentWindowHandle()
 		a, err := webDriver.FindElements(selenium.ByXPATH, "//a")
 		//if err != nil{
 		//	panic(err)
