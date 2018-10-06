@@ -10,6 +10,16 @@ go get -u github.com/jinzhu/gorm
 go get -u github.com/jinzhu/inflection
 ```
 
+Linux chromedriver
+```
+yum -y install unzip
+yum -y install https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm
+wget https://chromedriver.storage.googleapis.com/2.35/chromedriver_linux64.zip
+unzip chromedriver_linux64.zip
+mv chromedriver /usr/bin/
+
+```
+
 ### 效果：
 <br>
 <div align="center">
